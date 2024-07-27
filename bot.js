@@ -40,7 +40,7 @@
                 var arguments2, command;
 
 
-s4d.client.login('MTI0ODc3OTA5MjA2MTMyMzM3Ng.GIlCFG.xLS_6pRiJvrWGBmkTqXj4FeLJs6ZzVDjwwtxaY').catch((e) => { s4d.tokenInvalid = true; s4d.tokenError = e; });
+s4d.client.login(process.env.token).catch((e) => { s4d.tokenInvalid = true; s4d.tokenError = e; });
 
 s4d.client.on('message', async (message) => {
   if (message.author.bot) {return}
