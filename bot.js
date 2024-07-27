@@ -40,35 +40,84 @@
                 var arguments2, command;
 
 
-s4d.client.login('Your bot token').catch((e) => { s4d.tokenInvalid = true; s4d.tokenError = e; });
+s4d.client.login('MTI0ODc3OTA5MjA2MTMyMzM3Ng.GIlCFG.xLS_6pRiJvrWGBmkTqXj4FeLJs6ZzVDjwwtxaY').catch((e) => { s4d.tokenInvalid = true; s4d.tokenError = e; });
 
-s4d.client.login('Your bot token').catch((e) => { s4d.tokenInvalid = true; s4d.tokenError = e; });
-
-s4d.client.on('message', async (s4dmessage) => {
-  if ((s4dmessage.content) == '!hello') {
-    s4dmessage.channel.send(
-            {
-                embed: {
-                    title: null,
-                    color: null,
-                    image: { url: null },
-                    description: 'Hi there'
+s4d.client.on('message', async (message) => {
+  if (message.author.bot) {return}
+    const filtrer = {"bad":"","fuck":"","crap":""}
+    for (var v in filtrer) {
+        if (message.content.toLowerCase().includes(v))
+            if (message.deletable) {
+                message.delete()
+                message.author.send("Your message has been deleted because it contained a bad word.")
+            }
+    }
+    const modrole = message.guild.roles.cache.find(role => role.name === "head mod");
+    const mod = message.member.roles.cache.has(modrole.id)
+    const owner = message.guild.ownerId===message.author.id
+    const comd = "!help !ping"
+    const modcmd = "!unlock !lock !kick !mute !unmute"
+    if (message.content.startsWith(prefix)) {
+        const args = message.content.slice(prefix.length).split(' ');
+        const fi = args[0]
+        const cmd = args.shift();
+        if (fi==="help") {
+            message.reply("Commands: ")
+            var cmds = comd.split(" ")
+            for (var v in cmds) {
+                message.channel.send(cmds[v])
+            }
+            if (mod) {
+                cmds = modcmd.split(" ")
+                for (var v in cmds) {
+                    message.channel.send(cmds[v])
+                }
+            } else {
+                if (owner) {
+                    cmds = modcmd.split(" ")
+                    for (var v in cmds) {
+                        message.channel.send(cmds[v])
+                    }
                 }
             }
-        );
-  }
-
+        }
+        if (fi==="ping") {
+            const msg = await message.reply('Pinging...');
+            await msg.edit(`Pong! The round trip took ${Date.now() - msg.createdTimestamp}ms.`);
+        }
+        if (mod) {
+            if (fi==="unlock") {
+                message.channel.permissionOverwrites.edit(message.channel.guild.roles.everyone, { SEND_MESSAGES: true });
+                message.reply("Channel unlocked.")
+            }
+            if (fi==="lock") {
+                message.channel.permissionOverwrites.edit(message.channel.guild.roles.everyone, { SEND_MESSAGES: false });
+                message.reply("Channel locked.")
+            }
+            if (fi==="kick") {
+                const member = message.mentions.members.first();
+                if (!member) {
+                    message.reply("Please mention a valid member of this server");
+                }
+                if (member) {
+                    member.kick();
+                    message.reply(`${member.user.tag} was kicked from the server.`);
+                }
+            }
+            if (fi==="mute") {
+                const member = message.mentions.members.first();
+                if (!member) {
+                    message.reply("Please mention a valid member of this server");
+                }
+                if (member) {
+                    member.timeout(60*60*24*30)
+                    message.reply(`<@${member.user.id}> was muted.`);
+                }
+            }
+        }
+    }
 });
 
-s4d.client.on('message', async (s4dmessage) => {
-  arguments2 = (s4dmessage.content).split(' ');
-  command = arguments2.splice(0, 1)[0];
-  if (command == '!say') {
-    s4dmessage.channel.send(String('You have written the following content after !say:'));
-    s4dmessage.channel.send(String((arguments2.join(' '))));
-  }
-
-});
 
                 s4d;
             
